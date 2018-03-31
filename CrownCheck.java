@@ -15,6 +15,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -39,7 +40,11 @@ public class CrownCheck extends Application {
             new CheckBox("最大"), new CheckBox("最大"), new CheckBox("最大"), new CheckBox("最大"), new CheckBox("最大"),
             new CheckBox("最大"), new CheckBox("最大"), new CheckBox("最大"), new CheckBox("最大"), new CheckBox("最大"),
             new CheckBox("最大") };
-
+    Text[] compTexts = { new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"),
+            new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"),
+            new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"),
+            new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"), new Text("●"),
+            new Text("●"), new Text("●"), new Text("●") };
     String[] minStrings = new String[30];
     String[] bigStrings = new String[30];
 
@@ -61,6 +66,7 @@ public class CrownCheck extends Application {
                 new Text("リオレイア亜種"), new Text("バゼルギウス"), new Text("ヴォルガノス"), new Text("ウラガンキン"), new Text("リオレウス亜種"),
                 new Text("ディアブロス亜種"), new Text("ネルギガンテ"), new Text("テオ・テスカトル"), new Text("クシャルダオラ"), new Text("ヴァルハザク"),
                 new Text("ゼノ・ジーヴァ") };
+
         //区切り用
         Text[] sepTexts = { new Text("|"), new Text("|"), new Text("|"), new Text("|"), new Text("|"), new Text("|"),
                 new Text("|"), new Text("|"), new Text("|"), new Text("|"), new Text("|"), new Text("|"), new Text("|"),
@@ -80,8 +86,8 @@ public class CrownCheck extends Application {
         addVBox.setAlignment(Pos.CENTER);
         VBox sepVBox = new VBox(10);
 
-        Button reloadButton = new Button("更新");
-        reloadButton.setOnAction(event -> writeRecoad());
+        Button wirteButton = new Button("更新");
+        wirteButton.setOnAction(event -> writeRecoad());
         try {
             File file = new File("./MHWText.txt");
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -108,23 +114,34 @@ public class CrownCheck extends Application {
             } else {
                 bigCrownBoxs[i].setSelected(false);
             }
+            if (minStrings[i].equals("1") && bigStrings[i].equals("1")) {
+                compTexts[i].setFill(Color.GOLD);
+            } else if (minStrings[i].equals("1") || bigStrings[i].equals("1")) {
+                compTexts[i].setFill(Color.SILVER);
+            } else {
+                compTexts[i].setFill(Color.BLACK);
+            }
         }
         for (int i = 0; i < 15; i++) {
             //名前：最小：最大 L
-            GridPane.setConstraints(mTexts[i], 0, i);
-            GridPane.setConstraints(smallCrownBoxs[i], 1, i);
-            GridPane.setConstraints(bigCrownBoxs[i], 2, i);
+            GridPane.setConstraints(compTexts[i], 0, i);
+            GridPane.setConstraints(mTexts[i], 1, i);
+            GridPane.setConstraints(smallCrownBoxs[i], 2, i);
+            GridPane.setConstraints(bigCrownBoxs[i], 3, i);
             //名前：最小：最大 R
-            GridPane.setConstraints(mTexts[i + 15], 0, i);
-            GridPane.setConstraints(smallCrownBoxs[i + 15], 1, i);
-            GridPane.setConstraints(bigCrownBoxs[i + 15], 2, i);
+            GridPane.setConstraints(compTexts[i + 15], 0, i);
+            GridPane.setConstraints(mTexts[i + 15], 1, i);
+            GridPane.setConstraints(smallCrownBoxs[i + 15], 2, i);
+            GridPane.setConstraints(bigCrownBoxs[i + 15], 3, i);
         }
         for (int k = 0; k < 15; k++) {
             //L
+            mLGridPane.getChildren().add(compTexts[k]);
             mLGridPane.getChildren().add(mTexts[k]);
             mLGridPane.getChildren().add(bigCrownBoxs[k]);
             mLGridPane.getChildren().add(smallCrownBoxs[k]);
             //R
+            mRGridPane.getChildren().add(compTexts[k + 15]);
             mRGridPane.getChildren().add(mTexts[k + 15]);
             mRGridPane.getChildren().add(bigCrownBoxs[k + 15]);
             mRGridPane.getChildren().add(smallCrownBoxs[k + 15]);
@@ -133,7 +150,7 @@ public class CrownCheck extends Application {
             sepVBox.getChildren().add(sepTexts[i]);
         }
         mainHbox.getChildren().addAll(mLGridPane, sepVBox, mRGridPane);
-        addVBox.getChildren().addAll(mainHbox, reloadButton);
+        addVBox.getChildren().addAll(mainHbox, wirteButton);
         Scene topScene = new Scene(addVBox);
         stage.setScene(topScene);
         stage.show();
@@ -167,6 +184,44 @@ public class CrownCheck extends Application {
             System.out.println(e);
         } catch (IOException e) {
             System.out.println(e);
+        }
+        reload();
+    }
+
+    public void reload() {
+        try {
+            File file = new File("./MHWText.txt");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            for (int i = 0; i < 30; i++) {
+                minStrings[i] = br.readLine();
+                bigStrings[i] = br.readLine();
+            }
+            br.close();
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+
+        for (int i = 0; i < 30; i++) {
+            if (minStrings[i].equals("1")) {
+                smallCrownBoxs[i].setSelected(true);
+            } else {
+                smallCrownBoxs[i].setSelected(false);
+            }
+
+            if (bigStrings[i].equals("1")) {
+                bigCrownBoxs[i].setSelected(true);
+            } else {
+                bigCrownBoxs[i].setSelected(false);
+            }
+            if (minStrings[i].equals("1") && bigStrings[i].equals("1")) {
+                compTexts[i].setFill(Color.GOLD);
+            } else if (minStrings[i].equals("1") || bigStrings[i].equals("1")) {
+                compTexts[i].setFill(Color.SILVER);
+            } else {
+                compTexts[i].setFill(Color.BLACK);
+            }
         }
     }
 
